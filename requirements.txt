@@ -1,0 +1,4 @@
+flask
+requests
+psycopg2-binary  # For PostgreSQL DB access
+ipaddress        # Standard lib, but listed for clarity

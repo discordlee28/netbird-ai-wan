@@ -1,0 +1,50 @@
+# Docker Compose for NetBird IPAM and Onboarding
+# AI Coordinator + Spoke Deployment
+
+version: "3.9"
+
+services:
+  ai-coordinator:
+    build:
+      context: .
+      dockerfile: Dockerfile.coordinator
+    container_name: ai-coordinator
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_URL=postgresql://user:password@postgres:5432/netbird_ipam
+      - NETBIRD_API_TOKEN=${NETBIRD_API_TOKEN}
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+  spoke:
+    build:
+      context: .
+      dockerfile: Dockerfile.spoke
+    container_name: spoke-edge
+    environment:
+      - NETBIRD_SETUP_KEY=${NETBIRD_SETUP_KEY}
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: netbird-postgres
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=netbird_ipam
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

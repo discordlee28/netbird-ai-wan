@@ -1,0 +1,19 @@
+# Simplified Dockerfile for Spoke Equipment (testing mode)
+FROM ubuntu:22.04
+
+LABEL maintainer="Ryu <ryu@example.com>" \
+      org.openclaw.project="netbird-spoke"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl ca-certificates iproute2 && \
+    curl -sSL https://netbird.io/install.sh | sh && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /root
+
+COPY spoke-entrypoint.sh /spoke-entrypoint.sh
+RUN chmod +x /spoke-entrypoint.sh
+
+ENTRYPOINT ["/spoke-entrypoint.sh"]
