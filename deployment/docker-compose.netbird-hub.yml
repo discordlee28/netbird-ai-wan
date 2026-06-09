@@ -1,0 +1,20 @@
+services:
+  netbird-client:
+    container_name: netbird-client
+    hostname: hub-node
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - SYS_RESOURCE
+    devices:
+      - /dev/net/tun
+    network_mode: host
+    environment:
+      - NB_SETUP_KEY=5386D5D8-531C-4EA4-9E29-85FFBBD12484
+    volumes:
+      - netbird-client:/var/lib/netbird
+    image: netbirdio/netbird:latest
+
+volumes:
+  netbird-client:
+    name: netbird-client
